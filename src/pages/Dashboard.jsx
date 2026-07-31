@@ -6,12 +6,22 @@ export default function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("access");
 
+    if (!token) {
+      window.location.href = "/";
+      return;
+    }
+
     fetch(`${import.meta.env.VITE_API_URL}/api/dashboard/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          window.location.href = "/";
+        }
+        return res.json();
+      })
       .then(data => setMessage(data.message))
       .catch(() => setMessage("Unauthorized"));
   }, []);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Navbar from "../components/Navbar.jsx";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -29,8 +30,10 @@ else {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Login</h2>
+    <>
+      <Navbar />
+      <div className="container mt-5">
+        <h2>Login</h2>
 
       <input
         className="form-control my-2"
@@ -53,5 +56,7 @@ else {
       <a href="/register" className="mt-3 d-block">Create an account</a>
       {message && <p className="mt-3">{message}</p>}
     </div>
+    </>
+    
   );
 }

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar.jsx";
+
 
 export default function Dashboard() {
   const [message, setMessage] = useState("");
@@ -27,9 +29,14 @@ export default function Dashboard() {
   }, []);
 
   return (
+  <>
+    <Navbar />
+
     <div className="container mt-5">
       <h2>Dashboard</h2>
       <p>{message}</p>
     </div>
-  );
+  </>
+);
+
 }

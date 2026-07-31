@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Navbar from "../components/Navbar.jsx";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -26,6 +27,8 @@ export default function Register() {
   };
 
   return (
+    <>
+      <Navbar />
     <div className="container mt-5">
       <h2>Register</h2>
 
@@ -50,5 +53,6 @@ export default function Register() {
 
       {message && <p className="mt-3">{message}</p>}
     </div>
+    </>
   );
 }

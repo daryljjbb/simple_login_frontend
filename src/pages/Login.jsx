@@ -16,8 +16,11 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`Login successful! Welcome ${data.user}`);
-      } else {
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        window.location.href = "/dashboard";
+      }
+else {
         setMessage(data.error || "Login failed");
       }
     } catch (error) {

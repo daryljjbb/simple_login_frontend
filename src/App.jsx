@@ -5,6 +5,7 @@ import heroImg from './assets/hero.png'
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login.jsx";
+import Logout from "./pages/Logout.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -23,6 +24,7 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<Login />} />
+      <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />

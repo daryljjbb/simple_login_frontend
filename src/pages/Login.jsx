@@ -4,7 +4,6 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const decoded = JSON.parse(atob(data.access.split(".")[1]));
 
   const handleLogin = async () => {
     try {
@@ -17,9 +16,13 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
+        // decode AFTER receiving the token
+        const decoded = JSON.parse(atob(data.access.split(".")[1]));
+
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
         localStorage.setItem("role", decoded.role);
+
         window.location.href = "/dashboard";
       } else {
         setMessage(data.error || "Login failed");

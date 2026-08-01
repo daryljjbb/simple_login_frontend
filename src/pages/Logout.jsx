@@ -7,7 +7,7 @@ export default function Logout() {
     localStorage.removeItem("refresh");
 
     // Redirect to login page
-    window.location.href = "/login";
+    window.location.href = "/";
   }, []);
 
   return null; // No UI needed

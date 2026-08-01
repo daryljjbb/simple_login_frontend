@@ -11,13 +11,18 @@ export default function Navbar() {
 
       <div>
         <a href="/dashboard" className="btn btn-outline-light me-2">
-          Dashboard
+            Dashboard
+        </a>
+
+        <a href="/profile" className="btn btn-outline-light me-2">
+            Profile
         </a>
 
         <button className="btn btn-danger" onClick={handleLogout}>
-          Logout
+            Logout
         </button>
-      </div>
+        </div>
+
     </nav>
   );
 }

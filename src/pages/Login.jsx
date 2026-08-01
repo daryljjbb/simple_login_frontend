@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "../components/Layout.jsx";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -20,8 +19,7 @@ export default function Login() {
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
         window.location.href = "/dashboard";
-      }
-else {
+      } else {
         setMessage(data.error || "Login failed");
       }
     } catch (error) {
@@ -30,10 +28,8 @@ else {
   };
 
   return (
-    <>
-      <Layout />
-      <div className="container">
-        <h2>Login</h2>
+    <div className="container mt-5" style={{ maxWidth: "400px" }}>
+      <h2 className="mb-4 text-center">Login</h2>
 
       <input
         className="form-control my-2"
@@ -50,13 +46,15 @@ else {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button className="btn btn-primary" onClick={handleLogin}>
+      <button className="btn btn-primary w-100 mt-3" onClick={handleLogin}>
         Login
       </button>
-      <a href="/register" className="mt-3 d-block">Create an account</a>
-      {message && <p className="mt-3">{message}</p>}
+
+      <a href="/register" className="mt-3 d-block text-center">
+        Create an account
+      </a>
+
+      {message && <p className="mt-3 text-center text-danger">{message}</p>}
     </div>
-    </>
-    
   );
 }

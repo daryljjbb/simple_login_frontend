@@ -23,7 +23,12 @@ export default function Login() {
         localStorage.setItem("refresh", data.refresh);
         localStorage.setItem("role", decoded.role);
 
-        window.location.href = "/dashboard";
+        if (decoded.role === "admin") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/dashboard";
+        }
+
       } else {
         setMessage(data.error || "Login failed");
       }

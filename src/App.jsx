@@ -40,7 +40,14 @@ function App() {
           </RequireAuth>
         }
       />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        }
+      />
       <Route path="/profile" element={<Profile />} />
       <Route path="/edit-profile" element={<EditProfile />} />
       <Route path="/change-password" element={<ChangePassword />} />

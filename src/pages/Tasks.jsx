@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -150,7 +151,8 @@ export default function Tasks() {
 
   return (
     <>
-      <Layout>
+    <RequireAuth>
+        <Layout>
 
       <div className="container">
         <h2 className="mb-3">My Tasks</h2>
@@ -251,7 +253,10 @@ export default function Tasks() {
           </div>
         ))}
       </div>
-        </Layout>
+        </Layout> 
+
+    </RequireAuth>
+      
     </>
   );
 }

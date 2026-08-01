@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 export default function ChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
@@ -30,36 +31,40 @@ export default function ChangePassword() {
 
   return (
     <>
-      <Layout>
+    <RequireAuth>
+         <Layout>
 
-      <div className="container">
-        <h2>Change Password</h2>
+            <div className="container">
+                <h2>Change Password</h2>
 
-        <div className="card p-4 shadow-sm">
-          <input
-            className="form-control my-2"
-            type="password"
-            placeholder="Old Password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-          />
+                <div className="card p-4 shadow-sm">
+                <input
+                    className="form-control my-2"
+                    type="password"
+                    placeholder="Old Password"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                />
 
-          <input
-            className="form-control my-2"
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
+                <input
+                    className="form-control my-2"
+                    type="password"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                />
 
-          <button className="btn btn-warning mt-3" onClick={handleChange}>
-            Update Password
-          </button>
+                <button className="btn btn-warning mt-3" onClick={handleChange}>
+                    Update Password
+                </button>
 
-          {message && <p className="mt-3">{message}</p>}
-        </div>
-      </div>
-      </Layout>
+                {message && <p className="mt-3">{message}</p>}
+                </div>
+            </div>
+            </Layout>
+
+    </RequireAuth>
+     
     </>
   );
 }

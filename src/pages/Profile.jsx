@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -43,7 +44,8 @@ export default function Profile() {
 
   return (
     <>
-      <Layout>
+    <RequireAuth>
+         <Layout>
 
       <div className="container">
         <h2 className="mb-3">User Profile</h2>
@@ -57,6 +59,9 @@ export default function Profile() {
         </div>
       </div>
         </Layout>
+
+    </RequireAuth>
+     
     </>
   );
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import RequireAuth from "../components/RequireAuth.jsx";
+
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([]);
@@ -41,6 +43,7 @@ export default function Dashboard() {
 
   return (
     <>
+    <RequireAuth>
       <Layout>
 
       <div className="container">
@@ -113,6 +116,7 @@ export default function Dashboard() {
         </div>
       </div>
     </Layout>
+    </RequireAuth>
     </>
   );
 }

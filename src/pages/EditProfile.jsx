@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 export default function EditProfile() {
   const [email, setEmail] = useState("");
@@ -30,7 +31,8 @@ export default function EditProfile() {
 
   return (
     <>
-      <Layout >
+    <RequireAuth>
+        <Layout >
 
       <div className="container">
         <h2>Edit Profile</h2>
@@ -58,6 +60,9 @@ export default function EditProfile() {
         </div>
       </div>
         </Layout>
+
+    </RequireAuth>
+      
     </>
   );
 }

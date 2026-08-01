@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
 import ReactQuill from "react-quill";
+import RequireAuth from "../components/RequireAuth.jsx";
+
 
 
 export default function EditNote() {
@@ -70,7 +72,8 @@ export default function EditNote() {
 
   return (
     <>
-      <Layout >
+    <RequireAuth>
+         <Layout >
 
       <div className="container ">
         <h2>Edit Note</h2>
@@ -111,6 +114,8 @@ export default function EditNote() {
         </div>
       </div>
     </Layout>
+    </RequireAuth>
+     
     </>
   );
 }

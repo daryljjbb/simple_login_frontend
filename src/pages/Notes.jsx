@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
 import ReactQuill from "react-quill";
+import RequireAuth from "../components/RequireAuth.jsx";
 
 
 export default function Notes() {
@@ -107,7 +108,8 @@ const filteredNotes = notes.filter(note => {
 
   return (
     <>
-      <Layout>
+    <RequireAuth>
+        <Layout>
 
       <div className="container">
         <h2 className="mb-3">My Notes</h2>
@@ -198,6 +200,9 @@ const filteredNotes = notes.filter(note => {
         ))}
       </div>
       </Layout>
+
+    </RequireAuth>
+      
     </>
   );
 }

@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import ReactQuill from "react-quill";
+
 
 export default function EditNote() {
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
+  const [category, setCategory] = useState("other");
+
 
   useEffect(() => {
     async function loadNote() {
@@ -28,6 +32,7 @@ export default function EditNote() {
       const data = await response.json();
       setTitle(data.title);
       setContent(data.content);
+      setCategory(data.category);
     }
 
     loadNote();
@@ -42,7 +47,7 @@ export default function EditNote() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, category }),
     });
 
     if (response.status === 401) {
@@ -54,7 +59,7 @@ export default function EditNote() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content, category }),
       });
     }
 
@@ -65,11 +70,22 @@ export default function EditNote() {
 
   return (
     <>
-      <Navbar />
+      <Layout />
 
-      <div className="container mt-5">
+      <div className="container ">
         <h2>Edit Note</h2>
 
+        <select
+        className="form-control my-2"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        >
+        <option value="work">Work</option>
+        <option value="personal">Personal</option>
+        <option value="ideas">Ideas</option>
+        <option value="urgent">Urgent</option>
+        <option value="other">Other</option>
+        </select>
         <div className="card p-4 shadow-sm">
           <input
             className="form-control my-2"
@@ -78,13 +94,14 @@ export default function EditNote() {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <textarea
-            className="form-control my-2"
-            rows={4}
-            placeholder="Note content"
+          <ReactQuill
+            theme="snow"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={setContent}
+            className="my-2"
+            placeholder="Edit your note..."
           />
+
 
           <button className="btn btn-primary mt-3" onClick={handleUpdate}>
             Save Changes

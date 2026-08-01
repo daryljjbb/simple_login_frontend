@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
 
 export default function Profile() {
@@ -43,9 +43,9 @@ export default function Profile() {
 
   return (
     <>
-      <Navbar />
+      <Layout />
 
-      <div className="container mt-5">
+      <div className="container">
         <h2 className="mb-3">User Profile</h2>
 
         <div className="card p-4 shadow-sm">

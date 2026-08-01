@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
+import ReactQuill from "react-quill";
+
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("other");
+  const [categoryFilter, setCategoryFilter] = useState("");
+
+
+
 
   async function fetchNotes() {
     let token = localStorage.getItem("access");
@@ -39,7 +47,7 @@ export default function Notes() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, category }),
     });
 
     if (response.status === 401) {
@@ -84,36 +92,93 @@ export default function Notes() {
     }
   }
 
+const filteredNotes = notes.filter(note => {
+  const matchesSearch =
+    note.title.toLowerCase().includes(search.toLowerCase()) ||
+    note.content.toLowerCase().includes(search.toLowerCase());
+
+  const matchesCategory =
+    categoryFilter === "" || note.category === categoryFilter;
+
+  return matchesSearch && matchesCategory;
+});
+
+
+
   return (
     <>
-      <Navbar />
+      <Layout />
 
-      <div className="container mt-5">
+      <div className="container">
         <h2 className="mb-3">My Notes</h2>
 
-        <div className="card p-4 mb-4 shadow-sm">
-          <input
-            className="form-control my-2"
-            placeholder="Note title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <textarea
-            className="form-control my-2"
-            placeholder="Note content"
-            rows={3}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-          <button className="btn btn-primary mt-2" onClick={handleAddNote}>
-            Add Note
-          </button>
+        <input
+            className="form-control mb-4"
+            placeholder="Search notes..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+         />
+
+         <select
+        className="form-control mb-4"
+        value={categoryFilter}
+        onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+        <option value="">All Categories</option>
+        <option value="work">Work</option>
+        <option value="personal">Personal</option>
+        <option value="ideas">Ideas</option>
+        <option value="urgent">Urgent</option>
+        <option value="other">Other</option>
+        </select>
+
+
+           {/* Add Note Form */}
+       <div className="card p-4 mb-4 shadow-sm">
+            <input
+                className="form-control my-2"
+                placeholder="Note title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+            />
+
+            <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
+                className="my-2"
+                placeholder="Write your note here..."
+            />
+
+            <select
+                className="form-control my-2"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+            >
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="ideas">Ideas</option>
+                <option value="urgent">Urgent</option>
+                <option value="other">Other</option>
+            </select>
+
+            <button className="btn btn-primary mt-2" onClick={handleAddNote}>
+                Add Note
+            </button>
         </div>
 
-        {notes.map((note) => (
+
+         {/* Filtered Notes */}
+
+        {filteredNotes.map((note) => (
           <div key={note.id} className="card p-3 mb-3 shadow-sm">
             <h5>{note.title}</h5>
-            <p>{note.content}</p>
+           
+           <div dangerouslySetInnerHTML={{ __html: note.content }} />
+
+            <span className="badge bg-primary mb-2">
+            {note.category.charAt(0).toUpperCase() + note.category.slice(1)}
+            </span>
             <small className="text-muted">
               Created: {new Date(note.created_at).toLocaleString()}
             </small>

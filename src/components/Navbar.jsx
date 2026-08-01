@@ -27,6 +27,10 @@ export default function Navbar() {
         <a href="/notes" className="btn btn-outline-light me-2">
         Notes
         </a>
+        <a href="/tasks" className="btn btn-outline-light me-2">
+        Tasks
+        </a>
+
 
         <button className="btn btn-danger" onClick={handleLogout}>
             Logout

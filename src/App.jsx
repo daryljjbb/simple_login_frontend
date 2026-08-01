@@ -12,6 +12,7 @@ import EditProfile from "./pages/EditProfile.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import Notes from "./pages/Notes.jsx"
 import EditNote from "./pages/EditNote.jsx";
+import Tasks from "./pages/Tasks.jsx";
 
 
 
@@ -29,6 +30,7 @@ function App() {
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/notes" element={<Notes />} />
       <Route path="/notes/:id/edit" element={<EditNote />} />
+      <Route path="/tasks" element={<Tasks />} />
 
     </Routes>
   </BrowserRouter>

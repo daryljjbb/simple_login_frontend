@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
-
+import Layout from "../components/Layout.jsx";
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -28,8 +27,8 @@ export default function Register() {
 
   return (
     <>
-      <Navbar />
-    <div className="container mt-5">
+      <Layout />
+    <div className="container">
       <h2>Register</h2>
 
       <input

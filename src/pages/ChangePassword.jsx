@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 import { refreshAccessToken } from "../utils/auth.js";
 
 export default function ChangePassword() {
@@ -30,9 +30,9 @@ export default function ChangePassword() {
 
   return (
     <>
-      <Navbar />
+      <Layout  />
 
-      <div className="container mt-5">
+      <div className="container">
         <h2>Change Password</h2>
 
         <div className="card p-4 shadow-sm">

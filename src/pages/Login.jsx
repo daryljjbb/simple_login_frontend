@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
+import Layout from "../components/Layout.jsx";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -31,8 +31,8 @@ else {
 
   return (
     <>
-      <Navbar />
-      <div className="container mt-5">
+      <Layout />
+      <div className="container">
         <h2>Login</h2>
 
       <input

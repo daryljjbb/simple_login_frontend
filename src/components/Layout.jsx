@@ -1,8 +1,11 @@
 import { useState } from "react";
 import "./layout.css";
+import InactivityLogout from "./InactivityLogout.jsx";
+
 
 export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
+  const role = localStorage.getItem("role");
 
   return (
     <div className="layout-container">
@@ -28,6 +31,11 @@ export default function Layout({ children }) {
         </div>
 
         <nav className="sidebar-nav">
+            {role === "admin" && (
+            <a href="/admin" className="sidebar-link">
+                <i className="bi bi-shield-lock"></i> Admin Dashboard
+            </a>
+            )}
           <a href="/dashboard">📊 <span className="link-text">Dashboard</span></a>
           <a href="/notes">📝 <span className="link-text">Notes</span></a>
           <a href="/tasks">📋 <span className="link-text">Tasks</span></a>
@@ -37,7 +45,7 @@ export default function Layout({ children }) {
           <a href="/logout">🚪 <span className="link-text">Logout</span></a>
         </nav>
       </aside>
-
+    <InactivityLogout timeout={15 * 60 * 1000} />
       <main className="main-content">{children}</main>
     </div>
   );

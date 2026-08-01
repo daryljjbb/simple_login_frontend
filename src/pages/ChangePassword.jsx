@@ -1,70 +1,68 @@
 import { useState } from "react";
 import Layout from "../components/Layout.jsx";
-import { refreshAccessToken } from "../utils/auth.js";
 import RequireAuth from "../components/RequireAuth.jsx";
+import { apiFetch } from "../utils/api";
 
 export default function ChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleChange = async () => {
-    let token = localStorage.getItem("access");
+  async function handleChangePassword() {
+    const response = await apiFetch(
+      `${import.meta.env.VITE_API_URL}/api/change-password/`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          old_password: oldPassword,
+          new_password: newPassword,
+        }),
+      }
+    );
 
-    let response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/change-password/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
-    });
-
-    if (response.status === 401) {
-      token = await refreshAccessToken();
-      if (!token) return (window.location.href = "/");
+    if (response.ok) {
+      setMessage("Password changed successfully.");
+      setOldPassword("");
+      setNewPassword("");
+    } else {
+      const data = await response.json().catch(() => null);
+      setMessage(data?.error || "Failed to change password.");
     }
-
-    const data = await response.json();
-    setMessage(data.message || data.error);
-  };
+  }
 
   return (
-    <>
     <RequireAuth>
-         <Layout>
+      <Layout>
+        <div className="container">
+          <h2 className="mb-3">Change Password</h2>
 
-            <div className="container">
-                <h2>Change Password</h2>
-
-                <div className="card p-4 shadow-sm">
-                <input
-                    className="form-control my-2"
-                    type="password"
-                    placeholder="Old Password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                />
-
-                <input
-                    className="form-control my-2"
-                    type="password"
-                    placeholder="New Password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                />
-
-                <button className="btn btn-warning mt-3" onClick={handleChange}>
-                    Update Password
-                </button>
-
-                {message && <p className="mt-3">{message}</p>}
-                </div>
-            </div>
-            </Layout>
-
+          <div className="card p-4 shadow-sm">
+            <input
+              className="form-control my-2"
+              type="password"
+              placeholder="Current password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+            <input
+              className="form-control my-2"
+              type="password"
+              placeholder="New password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <button
+              className="btn btn-primary mt-2"
+              onClick={handleChangePassword}
+            >
+              Change Password
+            </button>
+            {message && (
+              <p className="mt-3 text-center text-muted">{message}</p>
+            )}
+          </div>
+        </div>
+      </Layout>
     </RequireAuth>
-     
-    </>
   );
 }

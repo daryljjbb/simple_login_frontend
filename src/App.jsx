@@ -14,6 +14,8 @@ import ChangePassword from "./pages/ChangePassword.jsx";
 import Notes from "./pages/Notes.jsx"
 import EditNote from "./pages/EditNote.jsx";
 import Tasks from "./pages/Tasks.jsx";
+import RequireRole from "./components/RequireRole.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 
 
@@ -26,6 +28,16 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth>
+            <RequireRole allowed={["admin"]}>
+              <AdminDashboard />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/edit-profile" element={<EditProfile />} />

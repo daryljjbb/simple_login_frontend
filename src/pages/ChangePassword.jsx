@@ -30,7 +30,7 @@ export default function ChangePassword() {
 
   return (
     <>
-      <Layout  />
+      <Layout>
 
       <div className="container">
         <h2>Change Password</h2>
@@ -59,6 +59,7 @@ export default function ChangePassword() {
           {message && <p className="mt-3">{message}</p>}
         </div>
       </div>
+      </Layout>
     </>
   );
 }

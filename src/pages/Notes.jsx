@@ -107,7 +107,7 @@ const filteredNotes = notes.filter(note => {
 
   return (
     <>
-      <Layout />
+      <Layout>
 
       <div className="container">
         <h2 className="mb-3">My Notes</h2>
@@ -197,6 +197,7 @@ const filteredNotes = notes.filter(note => {
           </div>
         ))}
       </div>
+      </Layout>
     </>
   );
 }

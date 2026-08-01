@@ -41,7 +41,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Layout />
+      <Layout>
 
       <div className="container">
         <h2 className="mb-4">Dashboard</h2>
@@ -112,6 +112,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+    </Layout>
     </>
   );
 }

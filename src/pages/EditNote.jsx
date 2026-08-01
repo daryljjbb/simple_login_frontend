@@ -70,7 +70,7 @@ export default function EditNote() {
 
   return (
     <>
-      <Layout />
+      <Layout >
 
       <div className="container ">
         <h2>Edit Note</h2>
@@ -110,6 +110,7 @@ export default function EditNote() {
           {message && <p className="mt-3 text-success">{message}</p>}
         </div>
       </div>
+    </Layout>
     </>
   );
 }

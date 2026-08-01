@@ -30,7 +30,7 @@ export default function EditProfile() {
 
   return (
     <>
-      <Layout />
+      <Layout >
 
       <div className="container">
         <h2>Edit Profile</h2>
@@ -57,6 +57,7 @@ export default function EditProfile() {
           {message && <p className="mt-3">{message}</p>}
         </div>
       </div>
+        </Layout>
     </>
   );
 }

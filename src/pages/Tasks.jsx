@@ -150,7 +150,7 @@ export default function Tasks() {
 
   return (
     <>
-      <Layout />
+      <Layout>
 
       <div className="container">
         <h2 className="mb-3">My Tasks</h2>
@@ -251,6 +251,7 @@ export default function Tasks() {
           </div>
         ))}
       </div>
+        </Layout>
     </>
   );
 }

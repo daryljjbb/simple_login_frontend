@@ -43,7 +43,7 @@ export default function Profile() {
 
   return (
     <>
-      <Layout />
+      <Layout>
 
       <div className="container">
         <h2 className="mb-3">User Profile</h2>
@@ -56,6 +56,7 @@ export default function Profile() {
           <p><strong>Last Login:</strong> {profile.last_login ? new Date(profile.last_login).toLocaleString() : "Never"}</p>
         </div>
       </div>
+        </Layout>
     </>
   );
 }

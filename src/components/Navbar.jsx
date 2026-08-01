@@ -17,6 +17,16 @@ export default function Navbar() {
         <a href="/profile" className="btn btn-outline-light me-2">
             Profile
         </a>
+        <a href="/edit-profile" className="btn btn-outline-light me-2">
+        Edit Profile
+        </a>
+
+        <a href="/change-password" className="btn btn-outline-light me-2">
+        Change Password
+        </a>
+        <a href="/notes" className="btn btn-outline-light me-2">
+        Notes
+        </a>
 
         <button className="btn btn-danger" onClick={handleLogout}>
             Logout

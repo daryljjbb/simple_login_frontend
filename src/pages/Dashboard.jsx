@@ -24,6 +24,13 @@ export default function Dashboard() {
     fetchDashboard();
   }, []);
 
+  const role = localStorage.getItem("role");
+
+if (role === "admin") {
+  return <Navigate to="/admin" />;
+}
+
+
   return (
     <RequireAuth>
       <Layout>

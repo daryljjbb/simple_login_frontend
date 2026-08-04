@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-const API_URL = "https://simple-login-backend-yimr.onrender.com/api";
+const API_URL = "https://simple-login-backend-f88m.onrender.com/api";
+
 
 function AdminDashboard() {
   const token = localStorage.getItem("access");

@@ -5,7 +5,6 @@ import RequireAuth from "../components/RequireAuth.jsx";
 
 const API_URL = "https://simple-login-backend-f88m.onrender.com/api";
 
-
 function AdminDashboard() {
   const token = localStorage.getItem("access");
   const role = localStorage.getItem("role");
@@ -14,12 +13,10 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Redirect non-admins
   if (role !== "admin") {
     return <Navigate to="/dashboard" />;
   }
 
-  // Fetch all users
   const fetchUsers = async () => {
     try {
       const res = await fetch(`${API_URL}/admin/users/`, {
@@ -28,9 +25,7 @@ function AdminDashboard() {
         },
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to load users");
-      }
+      if (!res.ok) throw new Error("Failed to load users");
 
       const data = await res.json();
       setUsers(data);
@@ -42,7 +37,6 @@ function AdminDashboard() {
     }
   };
 
-  // Update user role
   const updateRole = async (id, newRole) => {
     try {
       const res = await fetch(`${API_URL}/admin/users/${id}/role/`, {
@@ -54,17 +48,14 @@ function AdminDashboard() {
         body: JSON.stringify({ role: newRole }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to update role");
-      }
+      if (!res.ok) throw new Error("Failed to update role");
 
-      await fetchUsers(); // refresh list
+      await fetchUsers();
     } catch (err) {
       alert("Error updating role");
     }
   };
 
-  // Delete user
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
@@ -76,11 +67,9 @@ function AdminDashboard() {
         },
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to delete user");
-      }
+      if (!res.ok) throw new Error("Failed to delete user");
 
-      await fetchUsers(); // refresh list
+      await fetchUsers();
     } catch (err) {
       alert("Error deleting user");
     }
@@ -92,65 +81,68 @@ function AdminDashboard() {
 
   return (
     <RequireAuth>
-        <layout>
-            <div className="admin-dashboard">
-            <h1>Admin Dashboard</h1>
+      <Layout>
+        <div className="container mt-4">
+          <h2 className="mb-4">Admin Dashboard</h2>
 
-            {loading && <p>Loading users...</p>}
-            {error && <p style={{ color: "red" }}>{error}</p>}
+          {loading && <p>Loading users...</p>}
+          {error && <p className="text-danger">{error}</p>}
 
-            {!loading && users.length === 0 && <p>No users found.</p>}
+          {!loading && users.length === 0 && (
+            <p className="text-muted">No users found.</p>
+          )}
 
-            {!loading && users.length > 0 && (
-                <table className="user-table">
-                <thead>
-                    <tr>
+          {!loading && users.length > 0 && (
+            <div className="table-responsive">
+              <table className="table table-striped table-hover align-middle">
+                <thead className="table-dark">
+                  <tr>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Date Joined</th>
                     <th>Actions</th>
-                    </tr>
+                  </tr>
                 </thead>
 
                 <tbody>
-                    {users.map((user) => (
+                  {users.map((user) => (
                     <tr key={user.id}>
-                        <td>{user.username}</td>
-                        <td>{user.email || "—"}</td>
+                      <td>{user.username}</td>
+                      <td>{user.email || "—"}</td>
 
-                        {/* ROLE DROPDOWN */}
-                        <td>
+                      <td>
                         <select
-                            value={user.role}
-                            onChange={(e) => updateRole(user.id, e.target.value)}
+                          className="form-select form-select-sm"
+                          value={user.role}
+                          onChange={(e) =>
+                            updateRole(user.id, e.target.value)
+                          }
                         >
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
                         </select>
-                        </td>
+                      </td>
 
-                        <td>{new Date(user.date_joined).toLocaleDateString()}</td>
+                      <td>{new Date(user.date_joined).toLocaleDateString()}</td>
 
-                        <td>
+                      <td>
                         <button
-                            onClick={() => deleteUser(user.id)}
-                            className="delete-btn"
+                          onClick={() => deleteUser(user.id)}
+                          className="btn btn-sm btn-danger"
                         >
-                            Delete
+                          Delete
                         </button>
-                        </td>
+                      </td>
                     </tr>
-                    ))}
+                  ))}
                 </tbody>
-                </table>
-            )}
+              </table>
             </div>
-
-        </layout>
-        
+          )}
+        </div>
+      </Layout>
     </RequireAuth>
-    
   );
 }
 

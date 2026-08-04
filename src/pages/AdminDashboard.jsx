@@ -13,6 +13,12 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [search, setSearch] = useState("");
+  const [sortColumn, setSortColumn] = useState("username");
+  const [sortDirection, setSortDirection] = useState("asc");
+
+
+
   if (role !== "admin") {
     return <Navigate to="/dashboard" />;
   }
@@ -79,12 +85,113 @@ function AdminDashboard() {
     fetchUsers();
   }, []);
 
+  const sortUsers = (users) => {
+  return [...users].sort((a, b) => {
+    let valA = a[sortColumn];
+    let valB = b[sortColumn];
+
+    // Convert date to timestamp
+    if (sortColumn === "date_joined") {
+      valA = new Date(valA).getTime();
+      valB = new Date(valB).getTime();
+    }
+
+    // Convert null emails to empty string
+    if (valA === null) valA = "";
+    if (valB === null) valB = "";
+
+    if (valA < valB) return sortDirection === "asc" ? -1 : 1;
+    if (valA > valB) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
+};
+
+
+  const filteredUsers = sortUsers(
+  users.filter((user) => {
+    const term = search.toLowerCase();
+    return (
+      user.username.toLowerCase().includes(term) ||
+      (user.email && user.email.toLowerCase().includes(term)) ||
+      user.role.toLowerCase().includes(term)
+    );
+  })
+);
+
+// Analytics
+const totalUsers = users.length;
+const adminCount = users.filter((u) => u.role === "admin").length;
+
+const today = new Date().toDateString();
+const newUsersToday = users.filter(
+  (u) => new Date(u.date_joined).toDateString() === today
+).length;
+
+
+const toggleSort = (column) => {
+  if (sortColumn === column) {
+    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  } else {
+    setSortColumn(column);
+    setSortDirection("asc");
+  }
+};
+
+
   return (
     <RequireAuth>
       <Layout>
         <div className="container mt-4">
-          <h2 className="mb-4">Admin Dashboard</h2>
+          <h2 className="mb-4 fw-bold">Admin Dashboard</h2>
 
+          {/* ANALYTICS CARDS */}
+            <div className="row mb-4">
+            <div className="col-md-4">
+                <div className="card shadow-sm border-primary">
+                <div className="card-body">
+                    <h5 className="card-title text-primary d-flex align-items-center gap-2">
+                    <i className="bi bi-people-fill"></i> Total Users
+                    </h5>
+                    <h3 className="fw-bold">{totalUsers}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div className="col-md-4">
+                <div className="card shadow-sm border-danger">
+                <div className="card-body">
+                    <h5 className="card-title text-danger d-flex align-items-center gap-2">
+                    <i className="bi bi-shield-lock-fill"></i> Admin Count
+                    </h5>
+                    <h3 className="fw-bold">{adminCount}</h3>
+                </div>
+                </div>
+            </div>
+
+            <div className="col-md-4">
+                <div className="card shadow-sm border-success">
+                <div className="card-body">
+                    <h5 className="card-title text-success d-flex align-items-center gap-2">
+                    <i className="bi bi-calendar-check-fill"></i> New Users Today
+                    </h5>
+                    <h3 className="fw-bold">{newUsersToday}</h3>
+                </div>
+                </div>
+            </div>
+            </div>
+
+
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="fw-bold">Admin Dashboard</h2>
+
+            <input
+                type="text"
+                className="form-control w-25"
+                placeholder="Search users..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+            />
+            </div>
           {loading && <p>Loading users...</p>}
           {error && <p className="text-danger">{error}</p>}
 
@@ -94,49 +201,90 @@ function AdminDashboard() {
 
           {!loading && users.length > 0 && (
             <div className="table-responsive">
-              <table className="table table-striped table-hover align-middle">
+              <table className="table table-striped table-hover align-middle shadow-sm">
                 <thead className="table-dark">
-                  <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Date Joined</th>
+                <tr>
+                    <th
+                    onClick={() => toggleSort("username")}
+                    style={{ cursor: "pointer" }}
+                    >
+                    Username {sortColumn === "username" && (sortDirection === "asc" ? "▲" : "▼")}
+                    </th>
+
+                    <th
+                    onClick={() => toggleSort("email")}
+                    style={{ cursor: "pointer" }}
+                    >
+                    Email {sortColumn === "email" && (sortDirection === "asc" ? "▲" : "▼")}
+                    </th>
+
+                    <th
+                    onClick={() => toggleSort("role")}
+                    style={{ cursor: "pointer" }}
+                    >
+                    Role {sortColumn === "role" && (sortDirection === "asc" ? "▲" : "▼")}
+                    </th>
+
+                    <th
+                    onClick={() => toggleSort("date_joined")}
+                    style={{ cursor: "pointer" }}
+                    >
+                    Date Joined {sortColumn === "date_joined" && (sortDirection === "asc" ? "▲" : "▼")}
+                    </th>
+
                     <th>Actions</th>
-                  </tr>
+                </tr>
                 </thead>
 
+
                 <tbody>
-                  {users.map((user) => (
+                {filteredUsers.map((user) => (
                     <tr key={user.id}>
-                      <td>{user.username}</td>
-                      <td>{user.email || "—"}</td>
+                    <td className="fw-semibold">{user.username}</td>
+                    <td>{user.email || "—"}</td>
 
-                      <td>
+                    <td>
+                        {/* ROLE BADGE WITH ICON */}
+                        <span
+                        className={
+                            user.role === "admin"
+                            ? "badge bg-danger me-2"
+                            : "badge bg-primary me-2"
+                        }
+                        >
+                        {user.role === "admin" ? (
+                            <i className="bi bi-shield-lock-fill me-1"></i>
+                        ) : (
+                            <i className="bi bi-person-fill me-1"></i>
+                        )}
+                        {user.role}
+                        </span>
+
+                        {/* ROLE DROPDOWN */}
                         <select
-                          className="form-select form-select-sm"
-                          value={user.role}
-                          onChange={(e) =>
-                            updateRole(user.id, e.target.value)
-                          }
+                        className="form-select form-select-sm d-inline-block w-auto"
+                        value={user.role}
+                        onChange={(e) => updateRole(user.id, e.target.value)}
                         >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
                         </select>
-                      </td>
+                    </td>
 
-                      <td>{new Date(user.date_joined).toLocaleDateString()}</td>
+                    <td>{new Date(user.date_joined).toLocaleDateString()}</td>
 
-                      <td>
+                    <td>
                         <button
-                          onClick={() => deleteUser(user.id)}
-                          className="btn btn-sm btn-danger"
+                        onClick={() => deleteUser(user.id)}
+                        className="btn btn-sm btn-danger d-flex align-items-center gap-1"
                         >
-                          Delete
+                        <i className="bi bi-trash-fill"></i> Delete
                         </button>
-                      </td>
+                    </td>
                     </tr>
-                  ))}
+                ))}
                 </tbody>
+
               </table>
             </div>
           )}

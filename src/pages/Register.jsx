@@ -26,9 +26,7 @@ export default function Register() {
   };
 
   return (
-    <>
-      <Layout />
-    <div className="container">
+    <div className="container mt-5">
       <h2>Register</h2>
 
       <input
@@ -52,6 +50,5 @@ export default function Register() {
 
       {message && <p className="mt-3">{message}</p>}
     </div>
-    </>
   );
 }

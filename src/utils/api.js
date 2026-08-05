@@ -3,7 +3,6 @@ import { refreshAccessToken } from "./auth";
 export async function apiFetch(url, options = {}) {
   let access = localStorage.getItem("access");
 
-  // Attach access token
   options.headers = {
     ...(options.headers || {}),
     Authorization: `Bearer ${access}`,
@@ -12,13 +11,14 @@ export async function apiFetch(url, options = {}) {
 
   let response = await fetch(url, options);
 
-  // If access token expired → try refresh
   if (response.status === 401) {
     const newAccess = await refreshAccessToken();
 
-    if (!newAccess) return response; // refresh failed → logout handled
+    if (!newAccess) return response;
 
-    // Retry original request with new access token
+    // FIX: store new token so future requests use it
+    localStorage.setItem("access", newAccess);
+
     options.headers.Authorization = `Bearer ${newAccess}`;
     response = await fetch(url, options);
   }

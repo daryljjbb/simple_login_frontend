@@ -95,6 +95,45 @@
 }
 
 
+/* Phones */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    width: 70px;
+    z-index: 1000;
+    height: 100vh;
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+  }
+
+  .main-content {
+    margin-left: 70px !important;
+    padding: 15px;
+  }
+
+  .link-text {
+    display: none;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+  }
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 180px;
+  }
+
+  .main-content {
+    margin-left: 180px;
+  }
+}
+
+
 /* Main content */
 .main-content {
   flex: 1;
@@ -120,3 +159,5 @@ body.light-theme .sidebar-nav a:hover {
 body.light-theme .main-content {
   background: #ffffff;
 }
+
+

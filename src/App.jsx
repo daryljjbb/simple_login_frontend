@@ -24,7 +24,21 @@ import RequireAuth from "./components/RequireAuth.jsx";
 function App() {
   const [count, setCount] = useState(0)
 
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    document.body.setAttribute("data-bs-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+  setTheme(theme === "light" ? "dark" : "light");
+};
+
+
+
   return (
+    <Layout theme={theme} toggleTheme={toggleTheme}>
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<Login />} />
@@ -57,6 +71,7 @@ function App() {
 
     </Routes>
   </BrowserRouter>
+  </Layout>
   )
 }
 

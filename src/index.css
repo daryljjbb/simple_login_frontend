@@ -2,3 +2,17 @@
   transform: translateY(0);
   transition: transform 0.3s ease-in-out;
 }
+html, body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .card {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+[data-bs-theme="dark"] .table {
+  color: #fff;
+}
+
+

@@ -14,6 +14,23 @@ export default function Layout({ children }) {
           <h3 className="sidebar-title">{collapsed ? "SL" : "Simple Login"}</h3>
 
           <div className="sidebar-controls">
+            <li className="mt-3">
+            <button
+                className="btn btn-outline-secondary w-100 d-flex align-items-center gap-2"
+                onClick={toggleTheme}
+            >
+                {theme === "light" ? (
+                <>
+                    <i className="bi bi-moon-fill"></i> Dark Mode
+                </>
+                ) : (
+                <>
+                    <i className="bi bi-sun-fill"></i> Light Mode
+                </>
+                )}
+            </button>
+            </li>
+
             <button
               className="theme-btn"
               onClick={() => document.body.classList.toggle("light-theme")}

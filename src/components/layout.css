@@ -98,27 +98,30 @@
 /* Phones */
 @media (max-width: 768px) {
   .sidebar {
+    width: 70px !important;
     position: fixed;
-    width: 70px;
-    z-index: 1000;
+    left: 0;
+    top: 0;
     height: 100vh;
+    z-index: 1000;
+    overflow: hidden;
   }
 
   .sidebar.collapsed {
-    width: 70px;
+    width: 70px !important;
+  }
+
+  .sidebar .link-text {
+    display: none !important;
+  }
+
+  .sidebar-link {
+    justify-content: center !important;
   }
 
   .main-content {
     margin-left: 70px !important;
-    padding: 15px;
-  }
-
-  .link-text {
-    display: none;
-  }
-
-  .sidebar-link {
-    justify-content: center;
+    padding: 15px !important;
   }
 }
 

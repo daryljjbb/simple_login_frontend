@@ -39,41 +39,109 @@ function App() {
 
 
   return (
-    <Layout theme={theme} toggleTheme={toggleTheme}>
-    <BrowserRouter>
+  <BrowserRouter>
     <Routes>
+
+      {/* Public pages (NO layout) */}
       <Route path="/" element={<Login />} />
-      <Route path="/logout" element={<Logout />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/logout" element={<Logout />} />
+
+      {/* Protected pages (WITH layout) */}
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <Dashboard />
+            </Layout>
+          </RequireAuth>
+        }
+      />
+
       <Route
         path="/admin"
         element={
           <RequireAuth>
             <RequireRole allowed={["admin"]}>
-              <AdminDashboard />
+              <Layout theme={theme} toggleTheme={toggleTheme}>
+                <AdminDashboard />
+              </Layout>
             </RequireRole>
           </RequireAuth>
         }
       />
+
       <Route
-        path="/dashboard"
+        path="/profile"
         element={
           <RequireAuth>
-            <Dashboard />
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <Profile />
+            </Layout>
           </RequireAuth>
         }
       />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/edit-profile" element={<EditProfile />} />
-      <Route path="/change-password" element={<ChangePassword />} />
-      <Route path="/notes" element={<Notes />} />
-      <Route path="/notes/:id/edit" element={<EditNote />} />
-      <Route path="/tasks" element={<Tasks />} />
+
+      <Route
+        path="/edit-profile"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <EditProfile />
+            </Layout>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/change-password"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <ChangePassword />
+            </Layout>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/notes"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <Notes />
+            </Layout>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/notes/:id/edit"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <EditNote />
+            </Layout>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/tasks"
+        element={
+          <RequireAuth>
+            <Layout theme={theme} toggleTheme={toggleTheme}>
+              <Tasks />
+            </Layout>
+          </RequireAuth>
+        }
+      />
 
     </Routes>
   </BrowserRouter>
-  </Layout>
-  )
+);
+
 }
 
 export default App

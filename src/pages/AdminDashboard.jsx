@@ -161,6 +161,30 @@ const toggleSort = (column) => {
   }
 };
 
+const handleCreateUser = async () => {
+  try {
+    const res = await fetch(`${API_URL}/register/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(newUser),
+    });
+
+    if (!res.ok) {
+      alert("Failed to create user");
+      return;
+    }
+
+    setShowCreateModal(false);
+    setNewUser({ username: "", email: "", password: "", role: "user" });
+    await fetchUsers(); // refresh list
+  } catch (err) {
+    alert("Error creating user");
+  }
+};
+
 const exportCSV = () => {
   if (!users || users.length === 0) {
     alert("No users to export");
@@ -187,7 +211,6 @@ const exportCSV = () => {
   link.click();
   document.body.removeChild(link);
 };
-
 
 
 
@@ -236,6 +259,7 @@ const exportCSV = () => {
 
 
           <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="fw-bold">Admin Dashboard</h2>
 
             <input
                 type="text"
@@ -256,9 +280,8 @@ const exportCSV = () => {
             >
             <i className="bi bi-file-earmark-spreadsheet-fill"></i> Export CSV
             </button>
-          </div>
-        </div>
-
+            </div>
+        
           {loading && <p>Loading users...</p>}
           {error && <p className="text-danger">{error}</p>}
 
@@ -469,99 +492,99 @@ const exportCSV = () => {
                 </div>
             </div>
             )}
-
             {showCreateModal && (
-        <div
-            className="modal fade show"
-            style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
-        >
-            <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content shadow">
+            <div
+                className="modal fade show"
+                style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+            >
+                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content shadow">
 
-                <div className="modal-header">
-                <h5 className="modal-title">
-                    <i className="bi bi-person-plus-fill me-2"></i>
-                    Create New User
-                </h5>
-                <button
-                    className="btn-close"
-                    onClick={() => setShowCreateModal(false)}
-                ></button>
-                </div>
+                    <div className="modal-header">
+                    <h5 className="modal-title">
+                        <i className="bi bi-person-plus-fill me-2"></i>
+                        Create New User
+                    </h5>
+                    <button
+                        className="btn-close"
+                        onClick={() => setShowCreateModal(false)}
+                    ></button>
+                    </div>
 
-                <div className="modal-body">
-                <div className="mb-3">
-                    <label className="form-label">Username</label>
-                    <input
-                    type="text"
-                    className="form-control"
-                    value={newUser.username}
-                    onChange={(e) =>
-                        setNewUser({ ...newUser, username: e.target.value })
-                    }
-                    />
-                </div>
+                    <div className="modal-body">
+                    <div className="mb-3">
+                        <label className="form-label">Username</label>
+                        <input
+                        type="text"
+                        className="form-control"
+                        value={newUser.username}
+                        onChange={(e) =>
+                            setNewUser({ ...newUser, username: e.target.value })
+                        }
+                        />
+                    </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input
-                    type="email"
-                    className="form-control"
-                    value={newUser.email}
-                    onChange={(e) =>
-                        setNewUser({ ...newUser, email: e.target.value })
-                    }
-                    />
-                </div>
+                    <div className="mb-3">
+                        <label className="form-label">Email</label>
+                        <input
+                        type="email"
+                        className="form-control"
+                        value={newUser.email}
+                        onChange={(e) =>
+                            setNewUser({ ...newUser, email: e.target.value })
+                        }
+                        />
+                    </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input
-                    type="password"
-                    className="form-control"
-                    value={newUser.password}
-                    onChange={(e) =>
-                        setNewUser({ ...newUser, password: e.target.value })
-                    }
-                    />
-                </div>
+                    <div className="mb-3">
+                        <label className="form-label">Password</label>
+                        <input
+                        type="password"
+                        className="form-control"
+                        value={newUser.password}
+                        onChange={(e) =>
+                            setNewUser({ ...newUser, password: e.target.value })
+                        }
+                        />
+                    </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Role</label>
-                    <select
-                    className="form-select"
-                    value={newUser.role}
-                    onChange={(e) =>
-                        setNewUser({ ...newUser, role: e.target.value })
-                    }
+                    <div className="mb-3">
+                        <label className="form-label">Role</label>
+                        <select
+                        className="form-select"
+                        value={newUser.role}
+                        onChange={(e) =>
+                            setNewUser({ ...newUser, role: e.target.value })
+                        }
+                        >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    </div>
+
+                    <div className="modal-footer">
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => setShowCreateModal(false)}
                     >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    </select>
+                        Cancel
+                    </button>
+
+                    <button
+                        className="btn btn-success"
+                        onClick={handleCreateUser}
+                    >
+                        <i className="bi bi-check-circle-fill me-1"></i>
+                        Create User
+                    </button>
+                    </div>
+
                 </div>
                 </div>
-
-                <div className="modal-footer">
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => setShowCreateModal(false)}
-                >
-                    Cancel
-                </button>
-
-                <button
-                    className="btn btn-success"
-                    onClick={handleCreateUser}
-                >
-                    <i className="bi bi-check-circle-fill me-1"></i>
-                    Create User
-                </button>
-                </div>
-
             </div>
-            </div>
-        </div>
-        )}
+            )}
+
 
       </Layout>
     </RequireAuth>

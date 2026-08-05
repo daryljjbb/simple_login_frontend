@@ -71,7 +71,6 @@ export default function EditNote() {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Edit Note</h2>
 
@@ -116,7 +115,6 @@ export default function EditNote() {
             )}
           </div>
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

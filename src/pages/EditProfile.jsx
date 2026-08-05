@@ -37,7 +37,6 @@ export default function EditProfile() {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Edit Profile</h2>
 
@@ -66,7 +65,6 @@ export default function EditProfile() {
             )}
           </div>
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

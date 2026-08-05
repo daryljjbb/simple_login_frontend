@@ -21,18 +21,15 @@ export default function Profile() {
   if (!profile) {
     return (
       <RequireAuth>
-        <Layout>
           <div className="container">
             <p>Loading profile...</p>
           </div>
-        </Layout>
       </RequireAuth>
     );
   }
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Profile</h2>
           <div className="card p-4 shadow-sm">
@@ -41,7 +38,6 @@ export default function Profile() {
             {profile.full_name && <p><strong>Full Name:</strong> {profile.full_name}</p>}
           </div>
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

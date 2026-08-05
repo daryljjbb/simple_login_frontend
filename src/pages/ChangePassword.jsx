@@ -32,7 +32,6 @@ export default function ChangePassword() {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Change Password</h2>
 
@@ -62,7 +61,6 @@ export default function ChangePassword() {
             )}
           </div>
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

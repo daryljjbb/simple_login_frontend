@@ -55,7 +55,6 @@ export default function Tasks() {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Tasks</h2>
 
@@ -105,7 +104,6 @@ export default function Tasks() {
             </div>
           ))}
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

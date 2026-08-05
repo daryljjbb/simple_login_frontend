@@ -60,7 +60,6 @@ export default function Notes() {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">My Notes</h2>
 
@@ -149,7 +148,6 @@ export default function Notes() {
             </div>
           ))}
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

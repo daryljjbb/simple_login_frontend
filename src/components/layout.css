@@ -71,6 +71,30 @@
   display: none;
 }
 
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar.collapsed .link-text {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-link {
+  justify-content: center;
+}
+
+
 /* Main content */
 .main-content {
   flex: 1;

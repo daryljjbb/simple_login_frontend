@@ -18,6 +18,7 @@ import RequireRole from "./components/RequireRole.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import Layout from "./components/Layout.jsx";
+import Settings from "./pages/Settings.jsx";
 
 
 
@@ -133,6 +134,18 @@ function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/settings"
+          element={
+            <RequireAuth>
+              <Layout theme={theme} toggleTheme={toggleTheme}>
+                <Settings theme={theme} toggleTheme={toggleTheme} />
+              </Layout>
+            </RequireAuth>
+          }
+        />
+
 
       </Routes>
     </BrowserRouter>

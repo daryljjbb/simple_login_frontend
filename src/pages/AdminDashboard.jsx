@@ -16,6 +16,22 @@ function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("username");
   const [sortDirection, setSortDirection] = useState("asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5; // You can change this to 10, 20, etc.
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+const [newUser, setNewUser] = useState({
+  username: "",
+  email: "",
+  password: "",
+  role: "user",
+});
+
+
+
 
 
 
@@ -118,6 +134,14 @@ function AdminDashboard() {
   })
 );
 
+// Pagination calculations
+const indexOfLastUser = currentPage * usersPerPage;
+const indexOfFirstUser = indexOfLastUser - usersPerPage;
+const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+
 // Analytics
 const totalUsers = users.length;
 const adminCount = users.filter((u) => u.role === "admin").length;
@@ -136,6 +160,36 @@ const toggleSort = (column) => {
     setSortDirection("asc");
   }
 };
+
+const exportCSV = () => {
+  if (!users || users.length === 0) {
+    alert("No users to export");
+    return;
+  }
+
+  const header = ["Username", "Email", "Role", "Date Joined"];
+  const rows = users.map((u) => [
+    u.username,
+    u.email || "",
+    u.role,
+    new Date(u.date_joined).toLocaleDateString(),
+  ]);
+
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    [header, ...rows].map((e) => e.join(",")).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "users.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+
 
 
   return (
@@ -182,7 +236,6 @@ const toggleSort = (column) => {
 
 
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold">Admin Dashboard</h2>
 
             <input
                 type="text"
@@ -191,7 +244,21 @@ const toggleSort = (column) => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
             />
-            </div>
+            <button
+            className="btn btn-primary d-flex align-items-center gap-1"
+            onClick={() => setShowCreateModal(true)}
+            >
+            <i className="bi bi-person-plus-fill"></i> Create User
+            </button>
+             <button
+            className="btn btn-success d-flex align-items-center gap-1"
+            onClick={exportCSV}
+            >
+            <i className="bi bi-file-earmark-spreadsheet-fill"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
           {loading && <p>Loading users...</p>}
           {error && <p className="text-danger">{error}</p>}
 
@@ -238,7 +305,7 @@ const toggleSort = (column) => {
 
 
                 <tbody>
-                {filteredUsers.map((user) => (
+                {currentUsers.map((user) => (
                     <tr key={user.id}>
                     <td className="fw-semibold">{user.username}</td>
                     <td>{user.email || "—"}</td>
@@ -275,6 +342,16 @@ const toggleSort = (column) => {
 
                     <td>
                         <button
+                        className="btn btn-sm btn-secondary d-flex align-items-center gap-1 me-2"
+                        onClick={() => {
+                            setSelectedUser(user);
+                            setShowModal(true);
+                        }}
+                        >
+                        <i className="bi bi-eye-fill"></i> View
+                        </button>
+
+                        <button
                         onClick={() => deleteUser(user.id)}
                         className="btn btn-sm btn-danger d-flex align-items-center gap-1"
                         >
@@ -286,9 +363,206 @@ const toggleSort = (column) => {
                 </tbody>
 
               </table>
+              {/* PAGINATION */}
+                <nav>
+                <ul className="pagination justify-content-center mt-3">
+
+                    {/* Previous */}
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                    <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                        Previous
+                    </button>
+                    </li>
+
+                    {/* Page numbers */}
+                    {Array.from({ length: totalPages }, (_, i) => (
+                    <li
+                        key={i}
+                        className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
+                    >
+                        <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(i + 1)}
+                        >
+                        {i + 1}
+                        </button>
+                    </li>
+                    ))}
+
+                    {/* Next */}
+                    <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                    <button
+                        className="page-link"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                        Next
+                    </button>
+                    </li>
+
+                </ul>
+                </nav>
+
             </div>
           )}
         </div>
+        {/* USER DETAILS MODAL */}
+            {showModal && selectedUser && (
+            <div
+                className="modal fade show"
+                style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+            >
+                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content shadow">
+
+                    <div className="modal-header">
+                    <h5 className="modal-title">
+                        <i className="bi bi-person-badge-fill me-2"></i>
+                        User Details
+                    </h5>
+                    <button
+                        className="btn-close"
+                        onClick={() => setShowModal(false)}
+                    ></button>
+                    </div>
+
+                    <div className="modal-body">
+                    <p><strong>Username:</strong> {selectedUser.username}</p>
+                    <p><strong>Email:</strong> {selectedUser.email || "—"}</p>
+
+                    <p>
+                        <strong>Role:</strong>{" "}
+                        <span
+                        className={
+                            selectedUser.role === "admin"
+                            ? "badge bg-danger"
+                            : "badge bg-primary"
+                        }
+                        >
+                        {selectedUser.role === "admin" ? (
+                            <i className="bi bi-shield-lock-fill me-1"></i>
+                        ) : (
+                            <i className="bi bi-person-fill me-1"></i>
+                        )}
+                        {selectedUser.role}
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>Date Joined:</strong>{" "}
+                        {new Date(selectedUser.date_joined).toLocaleDateString()}
+                    </p>
+                    </div>
+
+                    <div className="modal-footer">
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => setShowModal(false)}
+                    >
+                        Close
+                    </button>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+            )}
+
+            {showCreateModal && (
+        <div
+            className="modal fade show"
+            style={{ display: "block", background: "rgba(0,0,0,0.5)" }}
+        >
+            <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow">
+
+                <div className="modal-header">
+                <h5 className="modal-title">
+                    <i className="bi bi-person-plus-fill me-2"></i>
+                    Create New User
+                </h5>
+                <button
+                    className="btn-close"
+                    onClick={() => setShowCreateModal(false)}
+                ></button>
+                </div>
+
+                <div className="modal-body">
+                <div className="mb-3">
+                    <label className="form-label">Username</label>
+                    <input
+                    type="text"
+                    className="form-control"
+                    value={newUser.username}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, username: e.target.value })
+                    }
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Email</label>
+                    <input
+                    type="email"
+                    className="form-control"
+                    value={newUser.email}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, email: e.target.value })
+                    }
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Password</label>
+                    <input
+                    type="password"
+                    className="form-control"
+                    value={newUser.password}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, password: e.target.value })
+                    }
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Role</label>
+                    <select
+                    className="form-select"
+                    value={newUser.role}
+                    onChange={(e) =>
+                        setNewUser({ ...newUser, role: e.target.value })
+                    }
+                    >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    </select>
+                </div>
+                </div>
+
+                <div className="modal-footer">
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => setShowCreateModal(false)}
+                >
+                    Cancel
+                </button>
+
+                <button
+                    className="btn btn-success"
+                    onClick={handleCreateUser}
+                >
+                    <i className="bi bi-check-circle-fill me-1"></i>
+                    Create User
+                </button>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        )}
+
       </Layout>
     </RequireAuth>
   );

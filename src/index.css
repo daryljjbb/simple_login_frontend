@@ -1,0 +1,4 @@
+.modal.fade.show .modal-dialog {
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}

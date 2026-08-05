@@ -3,7 +3,7 @@ import "./layout.css";
 import InactivityLogout from "./InactivityLogout.jsx";
 
 
-export default function Layout({ children }) {
+export default function Layout({ children, theme, toggleTheme }) {
   const [collapsed, setCollapsed] = useState(false);
   const role = localStorage.getItem("role");
 

@@ -33,7 +33,6 @@ if (role === "admin") {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container">
           <h2 className="mb-3">Dashboard</h2>
 
@@ -88,7 +87,6 @@ if (role === "admin") {
             </div>
           </div>
         </div>
-      </Layout>
     </RequireAuth>
   );
 }

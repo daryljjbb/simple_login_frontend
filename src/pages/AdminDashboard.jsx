@@ -217,7 +217,6 @@ const exportCSV = () => {
 
   return (
     <RequireAuth>
-      <Layout>
         <div className="container mt-4">
           <h2 className="mb-4 fw-bold">Admin Dashboard</h2>
 
@@ -585,8 +584,6 @@ const exportCSV = () => {
             </div>
             )}
 
-
-      </Layout>
     </RequireAuth>
   );
 }

@@ -24,18 +24,20 @@ export default function Notes() {
     fetchNotes();
   }, []);
 
-  async function handleAddNote() {
-    const response = await apiFetch(`${import.meta.env.VITE_API_URL}/api/notes/`, {
-      method: "POST",
-      body: JSON.stringify({ title, content, category }),
-    });
+ async function handleAddNote() {
+  const response = await apiFetch(`${import.meta.env.VITE_API_URL}/api/notes/`, {
+    method: "POST",
+    body: JSON.stringify({ title, content, category }),
+  });
 
-    if (response.ok) {
-      setTitle("");
-      setContent("");
-      fetchNotes();
-    }
+  if (response.ok) {
+    setTitle("");
+    setContent("");
+
+    await fetchNotes();     // refresh notes list
   }
+}
+
 
   async function handleDeleteNote(id) {
     const response = await apiFetch(`${import.meta.env.VITE_API_URL}/api/notes/${id}/`, {

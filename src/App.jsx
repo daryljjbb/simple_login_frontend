@@ -17,6 +17,7 @@ import Tasks from "./pages/Tasks.jsx";
 import RequireRole from "./components/RequireRole.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import Layout from "./components/Layout.jsx";
 
 
 

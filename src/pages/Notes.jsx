@@ -30,9 +30,10 @@ export default function Notes() {
     body: JSON.stringify({ title, content, category }),
   });
 
- if (response.ok) {
-  const newNote = await response.json();
-  setNotes([newNote, ...notes]);
+  if (response.ok) {
+    setTitle("");
+    setContent("");
+
     await fetchNotes();     // refresh notes list
   }
 }

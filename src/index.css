@@ -1,95 +1,15 @@
-.modal.fade.show .modal-dialog {
-  transform: translateY(0);
-  transition: transform 0.3s ease-in-out;
-}
-html, body {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-[data-bs-theme="dark"] .card {
-  background-color: #1e1e1e;
-  color: #fff;
-}
-
-[data-bs-theme="dark"] .table {
-  color: #fff;
-}
-
-.dashboard-cards {
-  display: flex;
-  gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .dashboard-cards {
-    flex-direction: column;
-  }
-}
-.dashboard-cards {
-  display: flex;
-  gap: 20px;
-}
-
-@media (max-width: 768px) {
-  .dashboard-cards {
-    flex-direction: column;
-  }
-}
-
-
-.table-responsive {
-  overflow-x: auto;
-}
-
-@media (max-width: 768px) {
-  .modal-dialog {
-    max-width: 95% !important;
-    margin: auto;
-  }
-}
-
-@media (max-width: 768px) {
-  input, button, select {
-    width: 100% !important;
-  }
-}
-
-.bg-purple {
-  background-color: #6f42c1 !important;
-}
-
-.drag-over {
-  border: 2px dashed #0d6efd;
-}
-
-
+/* Smooth movement + fade */
 .note-card {
-  transition: transform 150ms ease, opacity 150ms ease;
+  transition: transform 180ms ease, opacity 180ms ease;
 }
 
+/* While dragging */
 .note-card.dragging {
   opacity: 0.6;
   transform: scale(0.97);
 }
 
-.note-card.drag-over {
-  border: 2px dashed #0d6efd;
-}
-
-#drag-preview {
-  padding: 12px;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  font-weight: 600;
-  color: #333;
-}
-
-.note-card {
-  transition: transform 180ms ease, opacity 180ms ease;
-}
-
+/* Drop bounce */
 .note-card.drop-bounce {
   animation: bounceIn 180ms ease;
 }
@@ -106,3 +26,7 @@ html, body {
   }
 }
 
+/* Drag-over highlight */
+.note-card.drag-over {
+  border: 2px dashed #0d6efd;
+}

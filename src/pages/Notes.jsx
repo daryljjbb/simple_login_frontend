@@ -11,7 +11,7 @@ export default function Notes() {
   const [category, setCategory] = useState("other");
   const [categoryFilter, setCategoryFilter] = useState("");
 
-  // drag & drop state
+  // Drag state
   const [draggingId, setDraggingId] = useState(null);
   const [dragOverId, setDragOverId] = useState(null);
 
@@ -20,11 +20,13 @@ export default function Notes() {
     if (!response.ok) return;
 
     const data = await response.json();
-    // ensure pinned exists (frontend-only)
+
+    // Ensure pinned exists (frontend only)
     const withPinned = data.map((n) => ({
       ...n,
       pinned: n.pinned ?? false,
     }));
+
     setNotes(withPinned);
   }
 
@@ -40,13 +42,12 @@ export default function Notes() {
 
     if (response.ok) {
       const newNote = await response.json();
-      // default pinned false on frontend
-      newNote.pinned = false;
+      newNote.pinned = false; // default
 
       setNotes([newNote, ...notes]);
       setTitle("");
       setContent("");
-      setCategoryFilter(""); // show all so new note is visible
+      setCategoryFilter(""); // show all categories
     }
   }
 
@@ -72,13 +73,20 @@ export default function Notes() {
     setDraggingId(id);
   }
 
-  function handleDragOver(id) {
+  function handleDragOver(id, isPinnedGroup) {
     if (!draggingId || draggingId === id) return;
 
     const updated = [...notes];
+
+    // Only reorder inside the same group (pinned or unpinned)
+    const draggingNote = updated.find((n) => n.id === draggingId);
+    const targetNote = updated.find((n) => n.id === id);
+
+    if (!draggingNote || !targetNote) return;
+    if (draggingNote.pinned !== targetNote.pinned) return;
+
     const fromIndex = updated.findIndex((n) => n.id === draggingId);
     const toIndex = updated.findIndex((n) => n.id === id);
-    if (fromIndex === -1 || toIndex === -1) return;
 
     const [moved] = updated.splice(fromIndex, 1);
     updated.splice(toIndex, 0, moved);
@@ -92,24 +100,21 @@ export default function Notes() {
     setDragOverId(null);
   }
 
-  const filteredNotes = notes
-    .filter((note) => {
-      const matchesSearch =
-        note.title.toLowerCase().includes(search.toLowerCase()) ||
-        note.content.toLowerCase().includes(search.toLowerCase());
+  // Filter notes
+  const filteredNotes = notes.filter((note) => {
+    const matchesSearch =
+      note.title.toLowerCase().includes(search.toLowerCase()) ||
+      note.content.toLowerCase().includes(search.toLowerCase());
 
-      const matchesCategory =
-        categoryFilter === "" || note.category === categoryFilter;
+    const matchesCategory =
+      categoryFilter === "" || note.category === categoryFilter;
 
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      // pinned first
-      if (a.pinned && !b.pinned) return -1;
-      if (!a.pinned && b.pinned) return 1;
-      // then newest first
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
+    return matchesSearch && matchesCategory;
+  });
+
+  // Split into pinned and unpinned groups
+  const pinnedNotes = filteredNotes.filter((n) => n.pinned);
+  const unpinnedNotes = filteredNotes.filter((n) => !n.pinned);
 
   return (
     <RequireAuth>
@@ -172,8 +177,12 @@ export default function Notes() {
           </button>
         </div>
 
-        {/* Notes List */}
-        {filteredNotes.map((note) => (
+        {/* Pinned Notes */}
+        {pinnedNotes.length > 0 && (
+          <h4 className="mt-4 mb-2">Pinned</h4>
+        )}
+
+        {pinnedNotes.map((note) => (
           <div
             key={note.id}
             className={`card p-3 mb-3 shadow-sm ${
@@ -183,20 +192,16 @@ export default function Notes() {
             onDragStart={() => handleDragStart(note.id)}
             onDragOver={(e) => {
               e.preventDefault();
-              handleDragOver(note.id);
+              handleDragOver(note.id, true);
             }}
             onDragEnd={handleDragEnd}
           >
             <div className="d-flex justify-content-between align-items-start">
               <h5 className="mb-1">{note.title}</h5>
-              <span style={{ cursor: "grab" }} className="text-muted ms-2">
-                ⋮⋮
-              </span>
+              <span style={{ cursor: "grab" }} className="text-muted">⋮⋮</span>
             </div>
 
-            {note.pinned && (
-              <span className="badge bg-warning text-dark mb-2">Pinned</span>
-            )}
+            <span className="badge bg-warning text-dark mb-2">Pinned</span>
 
             <div dangerouslySetInnerHTML={{ __html: note.content }} />
 
@@ -213,7 +218,7 @@ export default function Notes() {
                   : "bg-secondary"
               }`}
             >
-              {note.category.charAt(0).toUpperCase() + note.category.slice(1)}
+              {note.category}
             </span>
 
             <small className="text-muted d-block mb-2">
@@ -221,12 +226,79 @@ export default function Notes() {
             </small>
 
             <button
-              className={`btn btn-sm ${
-                note.pinned ? "btn-warning" : "btn-outline-warning"
-              } mt-2 me-2`}
+              className="btn btn-sm btn-warning mt-2 me-2"
               onClick={() => togglePin(note.id)}
             >
-              {note.pinned ? "Unpin" : "Pin"}
+              Unpin
+            </button>
+
+            <a
+              href={`/notes/${note.id}/edit`}
+              className="btn btn-sm btn-secondary mt-2 me-2"
+            >
+              Edit
+            </a>
+
+            <button
+              className="btn btn-sm btn-danger mt-2"
+              onClick={() => handleDeleteNote(note.id)}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+
+        {/* Unpinned Notes */}
+        {unpinnedNotes.length > 0 && (
+          <h4 className="mt-4 mb-2">Notes</h4>
+        )}
+
+        {unpinnedNotes.map((note) => (
+          <div
+            key={note.id}
+            className={`card p-3 mb-3 shadow-sm ${
+              dragOverId === note.id ? "border border-primary" : ""
+            }`}
+            draggable
+            onDragStart={() => handleDragStart(note.id)}
+            onDragOver={(e) => {
+              e.preventDefault();
+              handleDragOver(note.id, false);
+            }}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <h5 className="mb-1">{note.title}</h5>
+              <span style={{ cursor: "grab" }} className="text-muted">⋮⋮</span>
+            </div>
+
+            <div dangerouslySetInnerHTML={{ __html: note.content }} />
+
+            <span
+              className={`badge mb-2 ${
+                note.category === "work"
+                  ? "bg-primary"
+                  : note.category === "personal"
+                  ? "bg-success"
+                  : note.category === "ideas"
+                  ? "bg-purple"
+                  : note.category === "urgent"
+                  ? "bg-danger"
+                  : "bg-secondary"
+              }`}
+            >
+              {note.category}
+            </span>
+
+            <small className="text-muted d-block mb-2">
+              Created: {new Date(note.created_at).toLocaleString()}
+            </small>
+
+            <button
+              className="btn btn-sm btn-outline-warning mt-2 me-2"
+              onClick={() => togglePin(note.id)}
+            >
+              Pin
             </button>
 
             <a

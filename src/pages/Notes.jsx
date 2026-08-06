@@ -89,20 +89,18 @@ function handleDragStart(e, id, title) {
 
   const preview = document.getElementById("drag-preview");
 
-  // Update preview content BEFORE setting drag image
   preview.innerHTML = `
     <strong>${title}</strong>
     <div style="font-size:12px; color:#666;">Dragging note...</div>
   `;
 
-  // Required transparent pixel hack
   const img = new Image();
   img.src =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGD4DwABBAEAffO3WQAAAABJRU5ErkJggg==";
 
-  // This MUST be called inside dragStart
   e.dataTransfer.setDragImage(preview, 0, 0);
 }
+
 
 
 
@@ -230,7 +228,7 @@ function handleDragStart(e, id, title) {
                   draggingId === note.id ? "dragging" : ""
                 } ${dragOverId === note.id ? "drag-over" : ""}`}
                 draggable
-                onDragStart={(e) => handleDragStart(note.id, note.title)}
+                onDragStart={(e) => handleDragStart(e,note.id, note.title)}
                 onDragOver={(e) => {
                   e.preventDefault();
                   autoScroll(e);
@@ -304,7 +302,7 @@ function handleDragStart(e, id, title) {
               dragOverId === note.id ? "border border-primary" : ""
             }`}
             draggable
-            onDragStart={(e) => handleDragStart(note.id, note.title)}
+            onDragStart={(e) => handleDragStart(e,note.id, note.title)}
             onDragOver={(e) => {
               e.preventDefault();
               autoScroll(e);

@@ -10,6 +10,9 @@ export default function Notes() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("other");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [draggingId, setDraggingId] = useState(null);
+  const [dragOverId, setDragOverId] = useState(null);
+
 
   async function fetchNotes() {
     const response = await apiFetch(`${import.meta.env.VITE_API_URL}/api/notes/`);
@@ -31,6 +34,8 @@ export default function Notes() {
 
     if (response.ok) {
       const newNote = await response.json();
+
+      newNote.pinned = false; // default
 
       // Add new note instantly
       setNotes([newNote, ...notes]);
@@ -54,7 +59,41 @@ export default function Notes() {
     }
   }
 
-  const filteredNotes = notes.filter((note) => {
+  function togglePin(id) {
+  setNotes((prevNotes) =>
+    prevNotes.map((note) =>
+      note.id === id ? { ...note, pinned: !note.pinned } : note
+    )
+  );
+}
+
+
+function handleDragStart(id) {
+  setDraggingId(id);
+}
+
+function handleDragOver(id) {
+  setDragOverId(id);
+}
+
+function handleDrop() {
+  if (!draggingId || !dragOverId || draggingId === dragOverId) return;
+
+  const updated = [...notes];
+  const fromIndex = updated.findIndex((n) => n.id === draggingId);
+  const toIndex = updated.findIndex((n) => n.id === dragOverId);
+
+  const [moved] = updated.splice(fromIndex, 1);
+  updated.splice(toIndex, 0, moved);
+
+  setNotes(updated);
+  setDraggingId(null);
+  setDragOverId(null);
+}
+
+
+  const filteredNotes = notes
+  .filter((note) => {
     const matchesSearch =
       note.title.toLowerCase().includes(search.toLowerCase()) ||
       note.content.toLowerCase().includes(search.toLowerCase());
@@ -63,7 +102,16 @@ export default function Notes() {
       categoryFilter === "" || note.category === categoryFilter;
 
     return matchesSearch && matchesCategory;
+  })
+  .sort((a, b) => {
+    // Pinned notes first
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+
+    // Otherwise sort by created_at DESC
+    return new Date(b.created_at) - new Date(a.created_at);
   });
+
 
   return (
     <RequireAuth>
@@ -128,32 +176,69 @@ export default function Notes() {
 
         {/* Notes List */}
         {filteredNotes.map((note) => (
-          <div key={note.id} className="card p-3 mb-3 shadow-sm">
+          <div
+              key={note.id}
+              className={`card p-3 mb-3 shadow-sm ${
+                draggingId === note.id ? "opacity-50" : ""
+              }`}
+              draggable
+              onDragStart={() => handleDragStart(note.id)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                handleDragOver(note.id);
+              }}
+              onDrop={handleDrop}
+            >
+            <span className="text-muted" style={{ cursor: "grab" }}>⋮⋮</span>
             <h5>{note.title}</h5>
+            {note.pinned && (
+                <span className="badge bg-warning text-dark mb-2">Pinned</span>
+             )}
 
             <div dangerouslySetInnerHTML={{ __html: note.content }} />
 
-            <span className="badge bg-primary mb-2">
+            <span
+              className={`badge mb-2 ${
+                note.category === "work"
+                  ? "bg-primary"
+                  : note.category === "personal"
+                  ? "bg-success"
+                  : note.category === "ideas"
+                  ? "bg-purple"
+                  : note.category === "urgent"
+                  ? "bg-danger"
+                  : "bg-secondary"
+              }`}
+            >
               {note.category.charAt(0).toUpperCase() + note.category.slice(1)}
             </span>
+
 
             <small className="text-muted">
               Created: {new Date(note.created_at).toLocaleString()}
             </small>
 
-            <a
-              href={`/notes/${note.id}/edit`}
-              className="btn btn-sm btn-secondary mt-2 me-2"
-            >
-              Edit
-            </a>
+           <button
+            className={`btn btn-sm ${note.pinned ? "btn-warning" : "btn-outline-warning"} mt-2 me-2`}
+            onClick={() => togglePin(note.id)}
+          >
+            {note.pinned ? "Unpin" : "Pin"}
+          </button>
 
-            <button
-              className="btn btn-sm btn-danger mt-2"
-              onClick={() => handleDeleteNote(note.id)}
-            >
-              Delete
-            </button>
+          <a
+            href={`/notes/${note.id}/edit`}
+            className="btn btn-sm btn-secondary mt-2 me-2"
+          >
+            Edit
+          </a>
+
+          <button
+            className="btn btn-sm btn-danger mt-2"
+            onClick={() => handleDeleteNote(note.id)}
+          >
+            Delete
+          </button>
+
           </div>
         ))}
       </div>

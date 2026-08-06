@@ -53,3 +53,8 @@ html, body {
     width: 100% !important;
   }
 }
+
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+

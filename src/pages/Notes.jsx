@@ -69,9 +69,33 @@ export default function Notes() {
     );
   }
 
-  function handleDragStart(id) {
-    setDraggingId(id);
+  function autoScroll(e) {
+  const scrollMargin = 80; // px from top/bottom to trigger scroll
+  const scrollSpeed = 12;  // px per frame
+
+  const y = e.clientY;
+  const windowHeight = window.innerHeight;
+
+  if (y < scrollMargin) {
+    window.scrollBy(0, -scrollSpeed);
+  } else if (y > windowHeight - scrollMargin) {
+    window.scrollBy(0, scrollSpeed);
   }
+}
+
+
+ function handleDragStart(id, title) {
+  setDraggingId(id);
+
+  const preview = document.getElementById("drag-preview");
+  preview.innerText = title;
+
+  // Use custom drag preview
+  const img = document.createElement("img");
+  img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGD4DwABBAEAffO3WQAAAABJRU5ErkJggg=="; 
+  e.dataTransfer.setDragImage(preview, 0, 0);
+}
+
 
   function handleDragOver(id, isPinnedGroup) {
     if (!draggingId || draggingId === id) return;
@@ -96,9 +120,16 @@ export default function Notes() {
   }
 
   function handleDragEnd() {
-    setDraggingId(null);
-    setDragOverId(null);
+  const card = document.querySelector(`[data-id="${draggingId}"]`);
+  if (card) {
+    card.classList.add("drop-bounce");
+    setTimeout(() => card.classList.remove("drop-bounce"), 200);
   }
+
+  setDraggingId(null);
+  setDragOverId(null);
+}
+
 
   // Filter notes
   const filteredNotes = notes.filter((note) => {
@@ -183,19 +214,23 @@ export default function Notes() {
         )}
 
         {pinnedNotes.map((note) => (
-          <div
-            key={note.id}
-            className={`card p-3 mb-3 shadow-sm ${
-              dragOverId === note.id ? "border border-primary" : ""
-            }`}
-            draggable
-            onDragStart={() => handleDragStart(note.id)}
-            onDragOver={(e) => {
-              e.preventDefault();
-              handleDragOver(note.id, true);
-            }}
-            onDragEnd={handleDragEnd}
-          >
+         <div
+                key={note.id}
+                data-id={note.id}
+                className={`note-card card p-3 mb-3 shadow-sm ${
+                  draggingId === note.id ? "dragging" : ""
+                } ${dragOverId === note.id ? "drag-over" : ""}`}
+                draggable
+                onDragStart={(e) => handleDragStart(note.id, note.title)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  autoScroll(e);
+                  handleDragOver(note.id, note.pinned);
+                }}
+                onDragEnd={handleDragEnd}
+        >
+
+
             <div className="d-flex justify-content-between align-items-start">
               <h5 className="mb-1">{note.title}</h5>
               <span style={{ cursor: "grab" }} className="text-muted">⋮⋮</span>
@@ -260,9 +295,10 @@ export default function Notes() {
               dragOverId === note.id ? "border border-primary" : ""
             }`}
             draggable
-            onDragStart={() => handleDragStart(note.id)}
+            onDragStart={(e) => handleDragStart(note.id, note.title)}
             onDragOver={(e) => {
               e.preventDefault();
+              autoScroll(e);
               handleDragOver(note.id, false);
             }}
             onDragEnd={handleDragEnd}
@@ -316,6 +352,20 @@ export default function Notes() {
             </button>
           </div>
         ))}
+        <div id="drag-preview" style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          padding: "10px",
+          background: "white",
+          borderRadius: "6px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          fontSize: "14px",
+          width: "200px"
+        }}>
+          Dragging...
+        </div>
+
       </div>
     </RequireAuth>
   );

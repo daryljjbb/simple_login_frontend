@@ -84,17 +84,26 @@ export default function Notes() {
 }
 
 
- function handleDragStart(id, title) {
+function handleDragStart(e, id, title) {
   setDraggingId(id);
 
   const preview = document.getElementById("drag-preview");
-  preview.innerText = title;
 
-  // Use custom drag preview
-  const img = document.createElement("img");
-  img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGD4DwABBAEAffO3WQAAAABJRU5ErkJggg=="; 
+  // Update preview content BEFORE setting drag image
+  preview.innerHTML = `
+    <strong>${title}</strong>
+    <div style="font-size:12px; color:#666;">Dragging note...</div>
+  `;
+
+  // Required transparent pixel hack
+  const img = new Image();
+  img.src =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGD4DwABBAEAffO3WQAAAABJRU5ErkJggg==";
+
+  // This MUST be called inside dragStart
   e.dataTransfer.setDragImage(preview, 0, 0);
 }
+
 
 
   function handleDragOver(id, isPinnedGroup) {

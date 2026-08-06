@@ -58,3 +58,8 @@ html, body {
   background-color: #6f42c1 !important;
 }
 
+.drag-over {
+  border: 2px dashed #0d6efd;
+}
+
+

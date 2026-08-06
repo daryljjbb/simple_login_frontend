@@ -10,16 +10,22 @@ export default function Notes() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("other");
   const [categoryFilter, setCategoryFilter] = useState("");
+
+  // drag & drop state
   const [draggingId, setDraggingId] = useState(null);
   const [dragOverId, setDragOverId] = useState(null);
-
 
   async function fetchNotes() {
     const response = await apiFetch(`${import.meta.env.VITE_API_URL}/api/notes/`);
     if (!response.ok) return;
 
     const data = await response.json();
-    setNotes(data);
+    // ensure pinned exists (frontend-only)
+    const withPinned = data.map((n) => ({
+      ...n,
+      pinned: n.pinned ?? false,
+    }));
+    setNotes(withPinned);
   }
 
   useEffect(() => {
@@ -34,18 +40,13 @@ export default function Notes() {
 
     if (response.ok) {
       const newNote = await response.json();
+      // default pinned false on frontend
+      newNote.pinned = false;
 
-      newNote.pinned = false; // default
-
-      // Add new note instantly
       setNotes([newNote, ...notes]);
-
-      // Reset form
       setTitle("");
       setContent("");
-
-      // Reset filter so new note always appears
-      setCategoryFilter("");
+      setCategoryFilter(""); // show all so new note is visible
     }
   }
 
@@ -60,58 +61,55 @@ export default function Notes() {
   }
 
   function togglePin(id) {
-  setNotes((prevNotes) =>
-    prevNotes.map((note) =>
-      note.id === id ? { ...note, pinned: !note.pinned } : note
-    )
-  );
-}
+    setNotes((prev) =>
+      prev.map((note) =>
+        note.id === id ? { ...note, pinned: !note.pinned } : note
+      )
+    );
+  }
 
+  function handleDragStart(id) {
+    setDraggingId(id);
+  }
 
-function handleDragStart(id) {
-  setDraggingId(id);
-}
+  function handleDragOver(id) {
+    if (!draggingId || draggingId === id) return;
 
-function handleDragOver(id) {
-  setDragOverId(id);
-}
+    const updated = [...notes];
+    const fromIndex = updated.findIndex((n) => n.id === draggingId);
+    const toIndex = updated.findIndex((n) => n.id === id);
+    if (fromIndex === -1 || toIndex === -1) return;
 
-function handleDrop() {
-  if (!draggingId || !dragOverId || draggingId === dragOverId) return;
+    const [moved] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, moved);
 
-  const updated = [...notes];
-  const fromIndex = updated.findIndex((n) => n.id === draggingId);
-  const toIndex = updated.findIndex((n) => n.id === dragOverId);
+    setNotes(updated);
+    setDragOverId(id);
+  }
 
-  const [moved] = updated.splice(fromIndex, 1);
-  updated.splice(toIndex, 0, moved);
-
-  setNotes(updated);
-  setDraggingId(null);
-  setDragOverId(null);
-}
-
+  function handleDragEnd() {
+    setDraggingId(null);
+    setDragOverId(null);
+  }
 
   const filteredNotes = notes
-  .filter((note) => {
-    const matchesSearch =
-      note.title.toLowerCase().includes(search.toLowerCase()) ||
-      note.content.toLowerCase().includes(search.toLowerCase());
+    .filter((note) => {
+      const matchesSearch =
+        note.title.toLowerCase().includes(search.toLowerCase()) ||
+        note.content.toLowerCase().includes(search.toLowerCase());
 
-    const matchesCategory =
-      categoryFilter === "" || note.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === "" || note.category === categoryFilter;
 
-    return matchesSearch && matchesCategory;
-  })
-  .sort((a, b) => {
-    // Pinned notes first
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-
-    // Otherwise sort by created_at DESC
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
-
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      // pinned first
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      // then newest first
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
   return (
     <RequireAuth>
@@ -177,23 +175,28 @@ function handleDrop() {
         {/* Notes List */}
         {filteredNotes.map((note) => (
           <div
-              key={note.id}
-              className={`card p-3 mb-3 shadow-sm ${
-                draggingId === note.id ? "opacity-50" : ""
-              }`}
-              draggable
-              onDragStart={() => handleDragStart(note.id)}
-              onDragOver={(e) => {
-                e.preventDefault();
-                handleDragOver(note.id);
-              }}
-              onDrop={handleDrop}
-            >
-            <span className="text-muted" style={{ cursor: "grab" }}>⋮⋮</span>
-            <h5>{note.title}</h5>
+            key={note.id}
+            className={`card p-3 mb-3 shadow-sm ${
+              dragOverId === note.id ? "border border-primary" : ""
+            }`}
+            draggable
+            onDragStart={() => handleDragStart(note.id)}
+            onDragOver={(e) => {
+              e.preventDefault();
+              handleDragOver(note.id);
+            }}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <h5 className="mb-1">{note.title}</h5>
+              <span style={{ cursor: "grab" }} className="text-muted ms-2">
+                ⋮⋮
+              </span>
+            </div>
+
             {note.pinned && (
-                <span className="badge bg-warning text-dark mb-2">Pinned</span>
-             )}
+              <span className="badge bg-warning text-dark mb-2">Pinned</span>
+            )}
 
             <div dangerouslySetInnerHTML={{ __html: note.content }} />
 
@@ -213,32 +216,32 @@ function handleDrop() {
               {note.category.charAt(0).toUpperCase() + note.category.slice(1)}
             </span>
 
-
-            <small className="text-muted">
+            <small className="text-muted d-block mb-2">
               Created: {new Date(note.created_at).toLocaleString()}
             </small>
 
-           <button
-            className={`btn btn-sm ${note.pinned ? "btn-warning" : "btn-outline-warning"} mt-2 me-2`}
-            onClick={() => togglePin(note.id)}
-          >
-            {note.pinned ? "Unpin" : "Pin"}
-          </button>
+            <button
+              className={`btn btn-sm ${
+                note.pinned ? "btn-warning" : "btn-outline-warning"
+              } mt-2 me-2`}
+              onClick={() => togglePin(note.id)}
+            >
+              {note.pinned ? "Unpin" : "Pin"}
+            </button>
 
-          <a
-            href={`/notes/${note.id}/edit`}
-            className="btn btn-sm btn-secondary mt-2 me-2"
-          >
-            Edit
-          </a>
+            <a
+              href={`/notes/${note.id}/edit`}
+              className="btn btn-sm btn-secondary mt-2 me-2"
+            >
+              Edit
+            </a>
 
-          <button
-            className="btn btn-sm btn-danger mt-2"
-            onClick={() => handleDeleteNote(note.id)}
-          >
-            Delete
-          </button>
-
+            <button
+              className="btn btn-sm btn-danger mt-2"
+              onClick={() => handleDeleteNote(note.id)}
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>
